@@ -1,46 +1,44 @@
-# main.py
+#!/usr/bin/env python3
 """
-Main script to orchestrate optical network path analysis.
+main.py
+
+Example driver script:
+  1) parse the input file
+  2) run path analyzer
+  3) output to CSV
 """
+
+import sys
+import os
 
 import input_parser
 import path_analyzer
 import output_formatter
 
-path_analyzer.REGENERATOR_REACH_THRESHOLD_KM = 1500.0
-
 def main():
-    simon_output_filepath = "simon_output_us_topology.txt"
-    output_csv_filepath = "path_analysis_output.csv"
+    if len(sys.argv) < 2:
+        print("Usage: python main.py <input_file> [<output_csv>]")
+        sys.exit(1)
 
-    print(f"Parsing Simon output file: {simon_output_filepath}...")
-    parsed_path_data_dict = input_parser.parse_simon_output_file(simon_output_filepath)
+    input_file = sys.argv[1]
+    output_csv = sys.argv[2] if len(sys.argv) > 2 else "path_analysis_output.csv"
 
-    if not parsed_path_data_dict:
-        print("Error: No path data parsed. Exiting.")
-        return
+    # 1) parse
+    path_records = input_parser.parse_simon_output_file(input_file)
 
-    path_analysis_results = {}
+    # 2) analyze
+    # Optionally adjust threshold:
+    # path_analyzer.REGENERATOR_THRESHOLD = 1500.0
+    results = path_analyzer.analyze_all_paths(path_records)
 
-    print("Analyzing paths and placing regenerators/OPCs...")
-    for path_id, path_data_tuples in parsed_path_data_dict.items():
-        regenerator_locations, path_sections = path_analyzer.regenerator_placement(path_data_tuples)
-        opc_locations = path_analyzer.opc_placement(path_sections)
-        residual_distance = path_analyzer.residual_distance_calculation(path_sections, opc_locations, path_data_tuples)
+    # 3) write CSV
+    out_dir = "output"
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
 
-        path_analysis_results[path_id] = {
-            "regenerator_locations": regenerator_locations,
-            "num_regenerators": len(regenerator_locations),
-            "opc_locations": opc_locations,
-            "residual_distance": residual_distance
-        }
-
-    print("Formatting and writing output to CSV...")
-    csv_output_data = output_formatter.format_path_results_csv(path_analysis_results)
-    output_formatter.write_csv_output(csv_output_data, output_csv_filepath)
-
-    print("Path analysis complete.")
-    print(f"Results are in: {output_csv_filepath}")
+    out_path = os.path.join(out_dir, output_csv)
+    output_formatter.write_analysis_to_csv(results, out_path)
+    print(f"Analysis complete. Results in {out_path}")
 
 if __name__ == "__main__":
     main()
