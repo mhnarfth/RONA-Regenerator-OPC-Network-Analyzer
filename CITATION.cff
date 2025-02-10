@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use RONA, please cite it as below."
+authors:
+  - family-names: Shariff
+    given-names: M A U
+    orcid: https://orcid.org/0000-0001-9258-2498
+title: "RONA-Regenerator-OPC-Network-Analyzer"
+version: 2.0.1
+identifiers:
+  - type:
+    value: 
+date-released: 2025-02-08
