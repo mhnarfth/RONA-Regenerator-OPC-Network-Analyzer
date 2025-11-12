@@ -1,4 +1,4 @@
-# Network Path Analyzer for Regeneration and Conjugation
+# Network Path Analyzer for Regeneration and Conjugation (NPARC)
 
 **RONA** is a Python-based tool for analyzing optical network paths and determining optimal placements for **Regenerators** and **Optical Phase Conjugators (OPCs)**. The tool also calculates the **residual uncompensated dispersion distance** based on a user-defined threshold. NPARC is composed of multiple Python modules, each handling a distinct step in the pipeline.
 
